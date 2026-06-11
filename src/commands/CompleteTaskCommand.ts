@@ -1,6 +1,5 @@
 import { AbstractCommand } from "./AbstractCommand";
 import { TaskList } from "../models/TaskList";
-import { Task } from "../models/Task";
 
 export class CompleteTaskCommand extends AbstractCommand {
   private previousState: boolean | undefined;
@@ -14,10 +13,21 @@ export class CompleteTaskCommand extends AbstractCommand {
   }
 
   execute(): void {
-    // TODO
+    const task = this.taskList
+      .getAllTasks()
+      .find((task) => task.id === this.taskId);
+
+    if (!task) {
+      return;
+    }
+
+    this.previousState = task.completed;
+    this.taskList.completeTask(this.taskId, this.completed);
   }
 
   undo(): void {
-    // TODO
+    if (this.previousState !== undefined) {
+      this.taskList.completeTask(this.taskId, this.previousState);
+    }
   }
 }
